@@ -58,11 +58,10 @@
 (describe "back substition"
   (it "works"
     (let [answers [1 2 3]
-          m [[3 3 1 9]
-             [0 1 1 5]
-             [0 0 1 3]]]
-      (should= answers (back-substitute m)))))
-
-
+          evaluations [9 5 3]
+          m [[2 2 1]
+             [0 1 1]
+             [0 0 1]]]
+      (should= answers (back-substitute m evaluations)))))
 
 (run-specs)
