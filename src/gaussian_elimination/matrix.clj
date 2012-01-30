@@ -18,3 +18,13 @@
 (defn add-col [m entries]
   (for [i (range (count m))]
     (conj (nth m i) (nth entries i))))
+
+(defn remove-last-col [m]
+  (for [row m]
+    (pop row)))
+
+(defn width [m]
+  (count (first m)))
+
+(defn last-col [m]
+  (get-col m (dec (width m))))

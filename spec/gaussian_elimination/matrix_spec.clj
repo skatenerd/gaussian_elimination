@@ -11,6 +11,17 @@
                   [64 8 1]
                   [36 6 1]]]
      (should= desired swapped)))
+  (it "pops cols correctly"
+    (let [popped (remove-last-col @cur-matrix)
+          desired [[64 8]
+                   [49 7]
+                   [36 6]]]
+      (should= desired popped)))
+
+  (it "finds the last col correctly"
+    (let [desired [1 1 1]]
+      (should= desired (last-col @cur-matrix))))
+
   (it "replaces correcly"
     (let [replaced (replace-row @cur-matrix 0 (list 1 1 1))
           desired [[1 1 1]

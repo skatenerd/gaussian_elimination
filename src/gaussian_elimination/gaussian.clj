@@ -2,10 +2,19 @@
   (use [gaussian_elimination.matrix])
   (use [gaussian_elimination.vector])
   (use [clojure.contrib.math]))
-(declare pivot triangulate)
+(declare pivot triangulate back-substitute)
 
 (defn gaussian-elimination [m evaluations]
-  22)
+  (let [augmented (add-col m evaluations)
+        triangulated (triangulate augmented)
+        evaluations (last-col triangulated)
+        triangulated-without-evaluations (remove-last-col triangulated)
+        _ (prn triangulated)
+        _ (prn (last-col triangulated))]
+        (back-substitute
+          triangulated-without-evaluations
+          evaluations)
+        ))
 
 (defn eliminate [pivot to-trim column]
   (let [pivot-elt (nth pivot column)
@@ -88,6 +97,7 @@
            nonzero-entries (subvec relevant-row idx-of-unknown)
            summable (subvec nonzero-entries 1)
            first-nonzero (first nonzero-entries)
+           ;_ (prn "truncated evals" truncated-evaluations)
            evaluation (last truncated-evaluations)
            combination-of-known-vars (apply 
                                        +
@@ -98,8 +108,8 @@
            remaining-qty (-  evaluation combination-of-known-vars)
            new-known (/ remaining-qty first-nonzero)]
        (back-substitute
-         (pop truncated-matrix)
-         (pop truncated-evaluations)
+         (pop (vec truncated-matrix))
+         (pop (vec truncated-evaluations))
          (cons new-known answers-so-far)
          (dec idx-of-unknown))))))
 
