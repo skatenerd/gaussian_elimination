@@ -30,7 +30,7 @@
     (gaussian-elimination matrix evaluations)))
         
 
-(defn eliminate [pivot to-trim column]
+(defn eliminate-cell [pivot to-trim column]
   (let [pivot-elt (nth pivot column)
         to-trim-elt (nth to-trim column)
         scaling-factor (/ to-trim-elt pivot-elt)
@@ -43,7 +43,7 @@
     with-zero-enforced))
 
 
-(defn row-at-bottom [matrix pivot-row-idx]
+(defn row-at-bottom? [matrix pivot-row-idx]
   (>= (inc pivot-row-idx) (count matrix)))
 
 
@@ -53,40 +53,40 @@
     (apply conj (vec first) (vec second))))
 
 (defn eliminate-col [matrix pivot-row-idx col-idx]
-  (if (row-at-bottom matrix pivot-row-idx)
+  (if (row-at-bottom? matrix pivot-row-idx)
     matrix
     (let [untouched-rows (take (inc pivot-row-idx) matrix)
           to-mutate (drop (inc pivot-row-idx) matrix)
           pivot (nth matrix pivot-row-idx)
           mutated (for [row to-mutate]
-                    (eliminate
+                    (eliminate-cell
                       pivot
                       row
                       col-idx))]
       (safe-append untouched-rows mutated))))
 
-(defn iter-triangulation [triangulated remaining col-elimination-idx]
-  (let [pivoted-remaining (pivot
-                            remaining
+(defn iter-triangulation [triangulated-rows remaining-rows col-elimination-idx]
+  (let [pivoted-remaining-rows (pivot
+                            remaining-rows
                             0
                             col-elimination-idx)
         with-eliminated-col (eliminate-col
-                              pivoted-remaining
+                              pivoted-remaining-rows
                               0
                               col-elimination-idx)
         new-col-elimination-idx (inc col-elimination-idx)]
     (triangulate
-      (conj triangulated
+      (conj triangulated-rows
             (first with-eliminated-col))
       (drop 1 with-eliminated-col)
       new-col-elimination-idx)))
 
 (defn triangulate
   ([matrix] (triangulate [] matrix 0))
-  ([triangulated remaining col-elimination-idx]
-   (if (empty? remaining)
-     triangulated
-     (iter-triangulation triangulated remaining col-elimination-idx))))
+  ([triangulated-rows remaining-rows col-elimination-idx]
+   (if (empty? remaining-rows)
+     triangulated-rows
+     (iter-triangulation triangulated-rows remaining-rows col-elimination-idx))))
 
 (defn idx-of-max-val [v]
   (apply

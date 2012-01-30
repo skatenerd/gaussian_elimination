@@ -43,7 +43,7 @@
     (let [pivot (first @matrix)
           other (second @matrix)
           col-idx 0]
-      (should= [0 0.5 0.5] (eliminate pivot other col-idx))))
+      (should= [0 0.5 0.5] (eliminate-cell pivot other col-idx))))
   
   (it "kills one column correctly"
     (let [col-idx 0
