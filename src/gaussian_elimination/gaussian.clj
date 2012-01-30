@@ -65,28 +65,28 @@
                       col-idx))]
       (safe-append untouched-rows mutated))))
 
-(defn iter-triangulation [triangulated remaining col-idx]
+(defn iter-triangulation [triangulated remaining col-elimination-idx]
   (let [pivoted-remaining (pivot
                             remaining
                             0
-                            col-idx)
-        mutated (eliminate-col
-                  pivoted-remaining
-                  0
-                  col-idx)
-        new-col-idx (inc col-idx)]
+                            col-elimination-idx)
+        with-eliminated-col (eliminate-col
+                              pivoted-remaining
+                              0
+                              col-elimination-idx)
+        new-col-elimination-idx (inc col-elimination-idx)]
     (triangulate
       (conj triangulated
-            (first mutated))
-      (drop 1 mutated)
-      new-col-idx)))
+            (first with-eliminated-col))
+      (drop 1 with-eliminated-col)
+      new-col-elimination-idx)))
 
 (defn triangulate
   ([matrix] (triangulate [] matrix 0))
-  ([triangulated remaining col-idx]
+  ([triangulated remaining col-elimination-idx]
    (if (empty? remaining)
      triangulated
-     (iter-triangulation triangulated remaining col-idx))))
+     (iter-triangulation triangulated remaining col-elimination-idx))))
 
 (defn idx-of-max-val [v]
   (apply
