@@ -4,6 +4,17 @@
         [gaussian_elimination.vector]
         [speclj.core]))
 
+
+(describe "user-friendly wrapper"
+  (with coefficients [1 -8 -14 -2 11])
+  (with x-vals [5 10 20 30 32])
+  (with evaluations [-724, 591, 90371, 581351, 772043])
+  (with points (map #(vector %1 %2) @x-vals @evaluations))
+
+  (it "still works with the wrapper"
+    (should= @coefficients (interpolate @points))))
+
+
 (describe "elimination for polynomials: acceptance test?"
   (with coefficients [2 1 4])
   (with degree-two-polynomial [[64 8 1]
@@ -12,7 +23,8 @@
   (with evaluations [140 109 82])
 
   (it "finds the right coefficients"
-    (should= @coefficients (gaussian-elimination @degree-two-polynomial @evaluations))))
+    (should= @coefficients (gaussian-elimination @degree-two-polynomial @evaluations))
+      ))
 
 
 (describe "triangulation"

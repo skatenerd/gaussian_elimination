@@ -8,13 +8,27 @@
   (let [augmented (add-col m evaluations)
         triangulated (triangulate augmented)
         evaluations (last-col triangulated)
-        triangulated-without-evaluations (remove-last-col triangulated)
-        _ (prn triangulated)
-        _ (prn (last-col triangulated))]
+        triangulated-without-evaluations (remove-last-col triangulated)]
         (back-substitute
           triangulated-without-evaluations
           evaluations)
         ))
+
+(defn build-row [degree x-val]
+  (vec(map #(Math/pow x-val %) (reverse (range (inc degree))))))
+
+(defn build-matrix [degree x-vals]
+  (vec (for [x x-vals]
+    (build-row degree x))))
+
+(defn interpolate [points]
+  (let [degree (dec (count points))
+        x-vals (map #(first %) points)
+        evaluations (map #(second %) points)
+        matrix (build-matrix degree x-vals)
+        ]
+    (gaussian-elimination matrix evaluations)))
+        
 
 (defn eliminate [pivot to-trim column]
   (let [pivot-elt (nth pivot column)
@@ -97,7 +111,6 @@
            nonzero-entries (subvec relevant-row idx-of-unknown)
            summable (subvec nonzero-entries 1)
            first-nonzero (first nonzero-entries)
-           ;_ (prn "truncated evals" truncated-evaluations)
            evaluation (last truncated-evaluations)
            combination-of-known-vars (apply 
                                        +
