@@ -101,6 +101,14 @@
           row-with-max-abs-val (idx-of-max-val relevant-col)]
       (swap matrix pivot-row-idx row-with-max-abs-val))))
 
+(defn get-linear-combination [coefficients values]
+  (apply
+    +
+    (map
+      *
+      coefficients
+      values)))
+
 (defn iterate-back-substitution 
   [truncated-matrix 
    truncated-evaluations
@@ -108,15 +116,12 @@
    idx-of-unknown]
    (let [relevant-row (last truncated-matrix)
          nonzero-entries (subvec relevant-row idx-of-unknown)
-         summable (subvec nonzero-entries 1)
+         entries-with-known-values (subvec nonzero-entries 1)
          first-nonzero (first nonzero-entries)
          evaluation (last truncated-evaluations)
-         combination-of-known-vars (apply 
-                                     +
-                                     (map
-                                       *
-                                       answers-so-far
-                                       summable))
+         combination-of-known-vars (get-linear-combination
+                                     entries-with-known-values
+                                     answers-so-far)
          remaining-qty (-  evaluation combination-of-known-vars)
          new-known (/ remaining-qty first-nonzero)]
      (back-substitute
