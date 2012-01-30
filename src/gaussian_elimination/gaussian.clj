@@ -101,28 +101,38 @@
           row-with-max-abs-val (idx-of-max-val relevant-col)]
       (swap matrix pivot-row-idx row-with-max-abs-val))))
 
+(defn iterate-back-substitution 
+  [truncated-matrix 
+   truncated-evaluations
+   answers-so-far
+   idx-of-unknown]
+   (let [relevant-row (last truncated-matrix)
+         nonzero-entries (subvec relevant-row idx-of-unknown)
+         summable (subvec nonzero-entries 1)
+         first-nonzero (first nonzero-entries)
+         evaluation (last truncated-evaluations)
+         combination-of-known-vars (apply 
+                                     +
+                                     (map
+                                       *
+                                       answers-so-far
+                                       summable))
+         remaining-qty (-  evaluation combination-of-known-vars)
+         new-known (/ remaining-qty first-nonzero)]
+     (back-substitute
+       (pop (vec truncated-matrix))
+       (pop (vec truncated-evaluations))
+       (cons new-known answers-so-far)
+       (dec idx-of-unknown))))
 
 (defn back-substitute
   ([m evaluations] (back-substitute m evaluations [] (dec (count (last m)))))
   ([truncated-matrix truncated-evaluations answers-so-far idx-of-unknown]
    (if (neg? idx-of-unknown)
      answers-so-far
-     (let [relevant-row (last truncated-matrix)
-           nonzero-entries (subvec relevant-row idx-of-unknown)
-           summable (subvec nonzero-entries 1)
-           first-nonzero (first nonzero-entries)
-           evaluation (last truncated-evaluations)
-           combination-of-known-vars (apply 
-                                       +
-                                       (map
-                                         *
-                                         answers-so-far
-                                         summable))
-           remaining-qty (-  evaluation combination-of-known-vars)
-           new-known (/ remaining-qty first-nonzero)]
-       (back-substitute
-         (pop (vec truncated-matrix))
-         (pop (vec truncated-evaluations))
-         (cons new-known answers-so-far)
-         (dec idx-of-unknown))))))
+     (iterate-back-substitution
+       truncated-matrix
+       truncated-evaluations
+       answers-so-far
+       idx-of-unknown))))
 
