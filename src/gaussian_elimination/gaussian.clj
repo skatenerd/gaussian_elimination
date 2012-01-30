@@ -101,13 +101,13 @@
           row-with-max-abs-val (idx-of-max-val relevant-col)]
       (swap matrix pivot-row-idx row-with-max-abs-val))))
 
-(defn get-linear-combination [coefficients values]
+(defn get-linear-combination [coefficients basis]
   (apply
     +
     (map
       *
       coefficients
-      values)))
+      basis)))
 
 (defn iterate-back-substitution 
   [truncated-matrix 
